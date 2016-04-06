@@ -41,7 +41,7 @@ package gov.lbl.srm.util;
 import java.util.*;
 import java.io.*;
 
-import org.glite.voms.VOMSValidator;
+import org.italiangrid.voms.VOMSValidators;
 
 //  import gov.bnl.gums.command.Configuration;
 //import gov.bnl.gums.admin.*;
@@ -56,11 +56,11 @@ import java.net.URL;
 import java.security.cert.X509Certificate;
 
 class ValidatorControl {
-    org.glite.voms.VOMSValidator _vv = null;
+    org.italiangrid.voms.ac.VOMSACValidator _vv = null;
     TSRMMutex _vvGuard = new TSRMMutex();
     
     public ValidatorControl() {
-	Class clazz = org.glite.voms.VOMSValidator.class;
+	Class clazz = org.italiangrid.voms.ac.VOMSACValidator.class;
 	String result0 =org.theshoemakers.which4j.Which4J.which(clazz);
 	System.out.println("which vomsvalidator?"+result0);
     }
@@ -73,7 +73,7 @@ class ValidatorControl {
 	List result = null;
 	try {
 	    if (_vv == null) {
-		//_vv = new org.glite.voms.VOMSValidator(null, null);
+		//_vv = org.italiangrid.voms.VOMSValidators.newValidator();
 		org.glite.voms.PKIStore vomsStore = null;
 		String vomsDir = System.getProperty( "VOMSDIR" );
 		vomsDir = (vomsDir == null ) ? org.glite.voms.PKIStore.DEFAULT_VOMSDIR : vomsDir;
@@ -92,26 +92,30 @@ class ValidatorControl {
 		caStore = new org.glite.voms.PKIStore( caDir, org.glite.voms.PKIStore.TYPE_CADIR, true );
 		caStore.rescheduleRefresh(900000);
 		
-		_vv = new org.glite.voms.VOMSValidator(null, new org.glite.voms.ac.ACValidator(new org.glite.voms.PKIVerifier(vomsStore,caStore)));
+	// was: _vv = new org.glite.voms.VOMSValidator(null, new org.glite.voms.ac.ACValidator(new org.glite.voms.PKIVerifier(vomsStore,caStore)));
+		// _vv = VOMSValidators.newValidator(null, new org.glite.voms.ac.ACValidator(new org.glite.voms.PKIVerifier(vomsStore,caStore)));
+		// perhaps want:
+		// _vv = VOMSValidators.newValidator(VOMSTrustStore trustStore, eu.emi.security.authn.x509.helpers.pkipath.AbstractValidator validator)
+		// or just:
+                _vv = VOMSValidators.newValidator()
 	    }
-	    _vv.setClientChain(certChain);
 	    
-	    List vc = _vv.parse().getVOMSAttributes();
+	    List vc = _vv.parse();
             if ((vc == null) || (vc.size() == 0)) {
 		return null;
             } 
             int nVomsCerts = vc.size();
             TSRMLog.debug(ValidatorControl.class, null, "vomsCertSize="+nVomsCerts, null);
             for (int i=0; i<nVomsCerts; i++) {
-		org.glite.voms.VOMSAttribute curr = (org.glite.voms.VOMSAttribute)(vc.get(i));
+		org.italiangrid.voms.VOMSAttribute curr = (org.italiangrid.voms.VOMSAttribute)(vc.get(i));
                  TSRMLog.debug(ValidatorControl.class, null, "listVomsCert-"+i+"th="+curr.toString(), null);
             }
             if (gov.lbl.srm.server.Config._doValidateVoms) {
-                _vv=_vv.validate();
+                _vv=_vv.validate(certChain);
             }
 	    TSRMLog.debug(ValidatorControl.class, null, "event=validated", null);
 	    
-            List vomsCerts = _vv.parse().getVOMSAttributes();
+            List vomsCerts = _vv.parse();
 	    if ((vomsCerts == null) || (vomsCerts.size() < nVomsCerts)) {
 		String detail = "null vomsCerts";
 		if (vomsCerts != null) {
@@ -248,7 +252,7 @@ class VOMSInfo {
 	    int total = vomsCerts.size();
 	    
 	    for (int i=0; i<total; i++) {
-	    org.glite.voms.VOMSAttribute curr = (org.glite.voms.VOMSAttribute)(vomsCerts.get(i));
+	    org.italiangrid.voms.VOMSAttribute curr = (org.italiangrid.voms.VOMSAttribute)(vomsCerts.get(i));
 	    //AttributeCertificate ac = curr.getAC();
 	    //TSRMLog.info(GUMSClient.class, "ac issuer="+ac.getIssuer().toString(), null, null);
 	    result.addAll(curr.getFullyQualifiedAttributes());
