@@ -76,7 +76,7 @@ class ValidatorControl {
 		//_vv = org.italiangrid.voms.VOMSValidators.newValidator();
 		org.glite.voms.PKIStore vomsStore = null;
 		String vomsDir = System.getProperty( "VOMSDIR" );
-		vomsDir = (vomsDir == null ) ? org.glite.voms.PKIStore.DEFAULT_VOMSDIR : vomsDir;
+		vomsDir = (vomsDir == null ) ? org.italiangrid.voms.store.impl.DefaultVOMSTrustStore.DEFAULT_VOMS_DIR : vomsDir;
 		TSRMLog.info(ValidatorControl.class, null, "vomsDir="+vomsDir, null);
 		
 		File theDir = new File(vomsDir);
