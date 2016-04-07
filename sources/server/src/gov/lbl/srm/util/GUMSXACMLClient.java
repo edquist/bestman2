@@ -43,6 +43,8 @@ import java.io.*;
 
 import org.italiangrid.voms.VOMSValidators;
 
+import eu.emi.security.authn.x509.helpers.pkipath.DirectoryCertChainValidator;
+
 //  import gov.bnl.gums.command.Configuration;
 //import gov.bnl.gums.admin.*;
 //import org.apache.commons.cli.*;
@@ -74,30 +76,38 @@ class ValidatorControl {
 	try {
 	    if (_vv == null) {
 		//_vv = org.italiangrid.voms.VOMSValidators.newValidator();
-		org.glite.voms.PKIStore vomsStore = null;
+		org.italiangrid.voms.store.impl.DefaultUpdatingVOMSTrustStore vomsStore = null;
 		String vomsDir = System.getProperty( "VOMSDIR" );
-		vomsDir = (vomsDir == null ) ? org.italiangrid.voms.store.impl.DefaultVOMSTrustStore.DEFAULT_VOMS_DIR : vomsDir;
+		vomsDir = (vomsDir == null ) ? org.italiangrid.voms.store.impl.DefaultUpdatingVOMSTrustStore.DEFAULT_VOMS_DIR : vomsDir;
 		TSRMLog.info(ValidatorControl.class, null, "vomsDir="+vomsDir, null);
 		
 		File theDir = new File(vomsDir);
 		if (theDir.exists() && theDir.isDirectory() && theDir.list().length > 0) {
-		    vomsStore = new org.glite.voms.PKIStore(vomsDir, org.glite.voms.PKIStore.TYPE_VOMSDIR, true);
-		    vomsStore.rescheduleRefresh(900000);
+		    List<String> vomsDirs;
+		    vomsDirs.add(vomsDir);
+		    vomsStore = new org.italiangrid.voms.store.impl.DefaultUpdatingVOMSTrustStore(vomsDirs, 900000);
 		}
 		
-		org.glite.voms.PKIStore caStore;
+		org.italiangrid.voms.store.impl.DefaultUpdatingVOMSTrustStore caStore;
 		String caDir = System.getProperty( "CADIR" );
-		caDir = (caDir == null) ? org.glite.voms.PKIStore.DEFAULT_CADIR : caDir;
+        //      where are we supposed to get this now?
+		String default_cadir = "/etc/grid-security/certificates";
+		caDir = (caDir == null) ? default_cadir : caDir;
 		TSRMLog.info(ValidatorControl.class, null, "caDir="+caDir, null);
-		caStore = new org.glite.voms.PKIStore( caDir, org.glite.voms.PKIStore.TYPE_CADIR, true );
-		caStore.rescheduleRefresh(900000);
+		// how do we say that we're talking about CA dirs?
+                List<String> caDirs;
+                caDirs.add(caDir);
+		caStore = new org.italiangrid.voms.store.impl.DefaultUpdatingVOMSTrustStore(caDirs, 900000);
 		
 	// was: _vv = new org.glite.voms.VOMSValidator(null, new org.glite.voms.ac.ACValidator(new org.glite.voms.PKIVerifier(vomsStore,caStore)));
 		// _vv = VOMSValidators.newValidator(null, new org.glite.voms.ac.ACValidator(new org.glite.voms.PKIVerifier(vomsStore,caStore)));
 		// perhaps want:
-		// _vv = VOMSValidators.newValidator(VOMSTrustStore trustStore, eu.emi.security.authn.x509.helpers.pkipath.AbstractValidator validator)
+		// _vv = VOMSValidators.newValidator(VOMSTrustStore trustStore, eu.emi.security.authn.x509.helpers.pkipath.AbstractValidator validator);
+                // no idea if this works...
+                DirectoryCertChainValidator = new DirectoryCertChainValidator(caDir, "/etc/grid-security/certificates", null);
+		_vv = VOMSValidators.newValidator(vomsStore, validator);
 		// or just:
-                _vv = VOMSValidators.newValidator()
+                // _vv = VOMSValidators.newValidator();
 	    }
 	    
 	    List vc = _vv.parse();
