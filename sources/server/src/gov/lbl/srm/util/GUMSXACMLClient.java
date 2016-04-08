@@ -108,7 +108,7 @@ class ValidatorControl {
 
                 // or, try again...
                 CertificateValidatorBuilder builder = new CertificateValidatorBuilder();
-                X509CertChainValidatorExt certChainValidator = builder.trustAnchorsDir(trustAnchorsDir).build();
+                X509CertChainValidatorExt certChainValidator = builder.trustAnchorsDir(caDir).build();
                         // .storeUpdateListener(storeUpdateListener).lazyAnchorsLoading(true)
                         // .validationErrorListener(certChainValidationErrorListener).build();
 		_vv = VOMSValidators.newValidator(vomsStore, certChainValidator);
