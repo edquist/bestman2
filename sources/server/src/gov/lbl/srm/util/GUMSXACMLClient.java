@@ -114,7 +114,7 @@ class ValidatorControl {
 		_vv = VOMSValidators.newValidator(vomsStore, certChainValidator);
 	    }
 	    
-	    List vc = _vv.parse();
+	    List vc = _vv.parse(certChain);
             if ((vc == null) || (vc.size() == 0)) {
 		return null;
             } 
@@ -124,12 +124,14 @@ class ValidatorControl {
 		org.italiangrid.voms.VOMSAttribute curr = (org.italiangrid.voms.VOMSAttribute)(vc.get(i));
                  TSRMLog.debug(ValidatorControl.class, null, "listVomsCert-"+i+"th="+curr.toString(), null);
             }
+            List vomsCerts;
             if (gov.lbl.srm.server.Config._doValidateVoms) {
-                _vv=_vv.validate(certChain);
+                vomsCerts = _vv.validate(certChain);
+            } else {
+                vomsCerts = _vv.parse(certChain);
             }
 	    TSRMLog.debug(ValidatorControl.class, null, "event=validated", null);
 	    
-            List vomsCerts = _vv.parse();
 	    if ((vomsCerts == null) || (vomsCerts.size() < nVomsCerts)) {
 		String detail = "null vomsCerts";
 		if (vomsCerts != null) {
