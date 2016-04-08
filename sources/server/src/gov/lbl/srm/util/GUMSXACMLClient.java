@@ -45,7 +45,6 @@ import org.italiangrid.voms.VOMSValidators;
 import org.italiangrid.voms.ac.impl.DefaultVOMSValidator;
 import org.italiangrid.voms.util.CertificateValidatorBuilder;
 
-import eu.emi.security.authn.x509.helpers.pkipath.DirectoryCertChainValidator;
 import eu.emi.security.authn.x509.X509CertChainValidatorExt;
 
 //  import gov.bnl.gums.command.Configuration;
@@ -104,9 +103,6 @@ class ValidatorControl {
 		// _vv = VOMSValidators.newValidator(null, new org.glite.voms.ac.ACValidator(new org.glite.voms.PKIVerifier(vomsStore,caStore)));
 		// perhaps want:
 		// _vv = VOMSValidators.newValidator(VOMSTrustStore trustStore, eu.emi.security.authn.x509.helpers.pkipath.AbstractValidator validator);
-                // no idea if this works...
-                //DirectoryCertChainValidator = new DirectoryCertChainValidator(caDir, "/etc/grid-security/certificates", null);
-		//_vv = VOMSValidators.newValidator(vomsStore, validator);
 		// or just:
                 // _vv = VOMSValidators.newValidator();
 
