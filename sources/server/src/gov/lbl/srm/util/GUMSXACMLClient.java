@@ -85,19 +85,15 @@ class ValidatorControl {
 		
 		File theDir = new File(vomsDir);
 		if (theDir.exists() && theDir.isDirectory() && theDir.list().length > 0) {
-		    List<String> vomsDirs;
+		    List<String> vomsDirs = new List<String>;
 		    vomsDirs.add(vomsDir);
 		    vomsStore = new org.italiangrid.voms.store.impl.DefaultUpdatingVOMSTrustStore(vomsDirs, 900000);
 		}
 		
-		org.italiangrid.voms.store.impl.DefaultUpdatingVOMSTrustStore caStore;
 		String caDir = System.getProperty( "CADIR" );
 		caDir = (caDir == null) ? DefaultVOMSValidator.DEFAULT_TRUST_ANCHORS_DIR : caDir;
 		TSRMLog.info(ValidatorControl.class, null, "caDir="+caDir, null);
 		// how do we say that we're talking about CA dirs?
-                List<String> caDirs;
-                caDirs.add(caDir);
-		caStore = new org.italiangrid.voms.store.impl.DefaultUpdatingVOMSTrustStore(caDirs, 900000);
 		
 	// was: _vv = new org.glite.voms.VOMSValidator(null, new org.glite.voms.ac.ACValidator(new org.glite.voms.PKIVerifier(vomsStore,caStore)));
 		// _vv = VOMSValidators.newValidator(null, new org.glite.voms.ac.ACValidator(new org.glite.voms.PKIVerifier(vomsStore,caStore)));
