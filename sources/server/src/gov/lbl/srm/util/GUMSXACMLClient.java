@@ -95,14 +95,6 @@ class ValidatorControl {
 		TSRMLog.info(ValidatorControl.class, null, "caDir="+caDir, null);
 		// how do we say that we're talking about CA dirs?
 		
-	// was: _vv = new org.glite.voms.VOMSValidator(null, new org.glite.voms.ac.ACValidator(new org.glite.voms.PKIVerifier(vomsStore,caStore)));
-		// _vv = VOMSValidators.newValidator(null, new org.glite.voms.ac.ACValidator(new org.glite.voms.PKIVerifier(vomsStore,caStore)));
-		// perhaps want:
-		// _vv = VOMSValidators.newValidator(VOMSTrustStore trustStore, eu.emi.security.authn.x509.helpers.pkipath.AbstractValidator validator);
-		// or just:
-                // _vv = VOMSValidators.newValidator();
-
-                // or, try again...
                 CertificateValidatorBuilder builder = new CertificateValidatorBuilder();
                 X509CertChainValidatorExt certChainValidator = builder.trustAnchorsDir(caDir).build();
                         // .storeUpdateListener(storeUpdateListener).lazyAnchorsLoading(true)
