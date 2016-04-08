@@ -42,8 +42,11 @@ import java.util.*;
 import java.io.*;
 
 import org.italiangrid.voms.VOMSValidators;
+import org.italiangrid.voms.ac.impl.DefaultVOMSValidator;
+import org.italiangrid.voms.util.CertificateValidatorBuilder;
 
 import eu.emi.security.authn.x509.helpers.pkipath.DirectoryCertChainValidator;
+import eu.emi.security.authn.x509.X509CertChainValidatorExt;
 
 //  import gov.bnl.gums.command.Configuration;
 //import gov.bnl.gums.admin.*;
@@ -102,10 +105,17 @@ class ValidatorControl {
 		// perhaps want:
 		// _vv = VOMSValidators.newValidator(VOMSTrustStore trustStore, eu.emi.security.authn.x509.helpers.pkipath.AbstractValidator validator);
                 // no idea if this works...
-                DirectoryCertChainValidator = new DirectoryCertChainValidator(caDir, "/etc/grid-security/certificates", null);
-		_vv = VOMSValidators.newValidator(vomsStore, validator);
+                //DirectoryCertChainValidator = new DirectoryCertChainValidator(caDir, "/etc/grid-security/certificates", null);
+		//_vv = VOMSValidators.newValidator(vomsStore, validator);
 		// or just:
                 // _vv = VOMSValidators.newValidator();
+
+                // or, try again...
+                CertificateValidatorBuilder builder = new CertificateValidatorBuilder();
+                X509CertChainValidatorExt certChainValidator = builder.trustAnchorsDir(trustAnchorsDir).build();
+                        // .storeUpdateListener(storeUpdateListener).lazyAnchorsLoading(true)
+                        // .validationErrorListener(certChainValidationErrorListener).build();
+		_vv = VOMSValidators.newValidator(vomsStore, certChainValidator);
 	    }
 	    
 	    List vc = _vv.parse();
