@@ -259,7 +259,7 @@ class VOMSInfo {
 	    org.italiangrid.voms.VOMSAttribute curr = (org.italiangrid.voms.VOMSAttribute)(vomsCerts.get(i));
 	    //AttributeCertificate ac = curr.getAC();
 	    //TSRMLog.info(GUMSClient.class, "ac issuer="+ac.getIssuer().toString(), null, null);
-	    result.addAll(curr.getFullyQualifiedAttributes());
+	    result.addAll(curr.getFQANs());
 	    }
 	    return result;
 	} catch (Exception e) {
