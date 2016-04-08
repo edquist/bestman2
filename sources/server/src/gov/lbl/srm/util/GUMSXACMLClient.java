@@ -90,9 +90,7 @@ class ValidatorControl {
 		
 		org.italiangrid.voms.store.impl.DefaultUpdatingVOMSTrustStore caStore;
 		String caDir = System.getProperty( "CADIR" );
-        //      where are we supposed to get this now?
-		String default_cadir = "/etc/grid-security/certificates";
-		caDir = (caDir == null) ? default_cadir : caDir;
+		caDir = (caDir == null) ? DefaultVOMSValidator.DEFAULT_TRUST_ANCHORS_DIR : caDir;
 		TSRMLog.info(ValidatorControl.class, null, "caDir="+caDir, null);
 		// how do we say that we're talking about CA dirs?
                 List<String> caDirs;
