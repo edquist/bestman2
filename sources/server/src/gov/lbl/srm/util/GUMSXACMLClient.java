@@ -41,7 +41,9 @@ package gov.lbl.srm.util;
 import java.util.*;
 import java.io.*;
 
+import org.italiangrid.voms.VOMSAttribute;
 import org.italiangrid.voms.VOMSValidators;
+import org.italiangrid.voms.ac.VOMSACValidator;
 import org.italiangrid.voms.ac.impl.DefaultVOMSValidator;
 import org.italiangrid.voms.util.CertificateValidatorBuilder;
 
@@ -60,11 +62,11 @@ import java.net.URL;
 import java.security.cert.X509Certificate;
 
 class ValidatorControl {
-    org.italiangrid.voms.ac.VOMSACValidator _vv = null;
+    VOMSACValidator _vv = null;
     TSRMMutex _vvGuard = new TSRMMutex();
     
     public ValidatorControl() {
-	Class clazz = org.italiangrid.voms.ac.VOMSACValidator.class;
+	Class clazz = VOMSACValidator.class;
 	String result0 =org.theshoemakers.which4j.Which4J.which(clazz);
 	System.out.println("which vomsvalidator?"+result0);
     }
@@ -77,17 +79,17 @@ class ValidatorControl {
 	List result = null;
 	try {
 	    if (_vv == null) {
-		//_vv = org.italiangrid.voms.VOMSValidators.newValidator();
-		org.italiangrid.voms.store.impl.DefaultUpdatingVOMSTrustStore vomsStore = null;
+		//_vv = VOMSValidators.newValidator();
+		DefaultUpdatingVOMSTrustStore vomsStore = null;
 		String vomsDir = System.getProperty( "VOMSDIR" );
-		vomsDir = (vomsDir == null ) ? org.italiangrid.voms.store.impl.DefaultUpdatingVOMSTrustStore.DEFAULT_VOMS_DIR : vomsDir;
+		vomsDir = (vomsDir == null ) ? DefaultUpdatingVOMSTrustStore.DEFAULT_VOMS_DIR : vomsDir;
 		TSRMLog.info(ValidatorControl.class, null, "vomsDir="+vomsDir, null);
 		
 		File theDir = new File(vomsDir);
 		if (theDir.exists() && theDir.isDirectory() && theDir.list().length > 0) {
 		    List<String> vomsDirs = new ArrayList<String>();
 		    vomsDirs.add(vomsDir);
-		    vomsStore = new org.italiangrid.voms.store.impl.DefaultUpdatingVOMSTrustStore(vomsDirs, 900000);
+		    vomsStore = new DefaultUpdatingVOMSTrustStore(vomsDirs, 900000);
 		}
 		
 		String caDir = System.getProperty( "CADIR" );
@@ -109,7 +111,7 @@ class ValidatorControl {
             int nVomsCerts = vc.size();
             TSRMLog.debug(ValidatorControl.class, null, "vomsCertSize="+nVomsCerts, null);
             for (int i=0; i<nVomsCerts; i++) {
-		org.italiangrid.voms.VOMSAttribute curr = (org.italiangrid.voms.VOMSAttribute)(vc.get(i));
+		VOMSAttribute curr = (VOMSAttribute)(vc.get(i));
                  TSRMLog.debug(ValidatorControl.class, null, "listVomsCert-"+i+"th="+curr.toString(), null);
             }
             List vomsCerts;
@@ -256,7 +258,7 @@ class VOMSInfo {
 	    int total = vomsCerts.size();
 	    
 	    for (int i=0; i<total; i++) {
-	    org.italiangrid.voms.VOMSAttribute curr = (org.italiangrid.voms.VOMSAttribute)(vomsCerts.get(i));
+	    VOMSAttribute curr = (VOMSAttribute)(vomsCerts.get(i));
 	    //AttributeCertificate ac = curr.getAC();
 	    //TSRMLog.info(GUMSClient.class, "ac issuer="+ac.getIssuer().toString(), null, null);
 	    result.addAll(curr.getFQANs());
